@@ -1,0 +1,42 @@
+# Template file for 'pin-pam'
+pkgname=pin-pam
+version=0.0.7
+revision=1
+build_style=gnu-makefile
+make_build_args="TARGETS=all"
+make_install_args="BIN_DEST=/usr/bin PAM_DEST=/usr/lib/security"
+
+# Install directories
+make_install_target="install-binaries"
+hostmakedepends="pam-devel openssl-devel"
+makedepends="pam-devel openssl-devel"
+checkdepends="cmocka cmocka-devel"
+short_desc="PIN-PAM is a PIN code PAM authentication module"
+maintainer="Kirill Che. <g4s8.public@gmail.com>"
+license="MIT"
+homepage="https://github.com/g4s8/pin-pam"
+distfiles="https://github.com/g4s8/pin-pam/archive/refs/tags/${version}.tar.gz"
+checksum=73ef87be3849ca235c756456e05f9319f5444ec8dd96ac08a7f365407b4897c7
+
+do_build() {
+	echo "CFLAGS: ${CFLAGS}"
+	env | sort
+	make CC=${CC} \
+		CFLAGS="${CFLAGS}" \
+		LDFLAGS="${LDFLAGS}" \
+		VERSION="${version}" \
+		all
+}
+
+do_check() {
+	make CC=${CC} \
+		CFLAGS="${CFLAGS}" \
+		LDFLAGS="${LDFLAGS}" \
+		test
+}
+
+do_install() {
+	install -Dm755 bin/ppedit ${DESTDIR}/usr/bin/ppedit
+	install -Dm755 pam/pam_pin.so ${DESTDIR}/usr/lib/security/pam_pin.so
+	vlicense LICENSE
+}
